@@ -28,7 +28,7 @@
         }
 
         /* ==========================================================================
-           Header (ロゴ部分に指定されたアップロード画像を表示)
+           Header (ロゴ画像 Main.png を表示)
            ========================================================================== */
         .main-header {
             background-color: #e0e0e0;
@@ -50,7 +50,6 @@
             gap: 15px;
         }
 
-        /* ロゴ画像をきれいに収めるスタイル */
         .logo-area {
             display: flex;
             flex-direction: column;
@@ -58,7 +57,7 @@
         }
 
         .logo-image {
-            max-height: 50px; /* ヘッダーに美しく収まるサイズに制限 */
+            max-height: 50px;
             width: auto;
             object-fit: contain;
             display: block;
@@ -124,6 +123,11 @@
             margin: 40px auto;
         }
 
+        /* 画面切り替え用：非表示にする要素 */
+        .hidden {
+            display: none !important;
+        }
+
         .section-header {
             display: flex;
             align-items: center;
@@ -141,7 +145,7 @@
             color: #666;
         }
 
-        /* 5列グリッド。黒い1pxの境界線 */
+        /* 5列グリッド：1pxの黒い境界線 */
         .news-grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
@@ -152,7 +156,7 @@
         }
 
         /* ==========================================================================
-           News Card (画像枠なし・タイトルテキストのみ)
+           News Card (画像領域なし・タイトルと日付のみ)
            ========================================================================== */
         .news-card {
             background-color: #fff;
@@ -160,10 +164,9 @@
             display: flex;
             flex-direction: column;
             transition: background-color 0.15s ease;
-            min-height: 140px; /* テキストだけでもカードとしての高さを一定に担保 */
+            min-height: 140px; /* テキストのみで美しさを担保 */
         }
 
-        /* 記事タイトルエリア */
         .news-title-area {
             padding: 20px;
             flex-grow: 1;
@@ -177,7 +180,6 @@
             font-weight: 600;
             line-height: 1.5;
             color: #222;
-            /* 4行制限（はみ出た部分は自動的に3点リーダー...で省略） */
             display: -webkit-box;
             -webkit-line-clamp: 4;
             -webkit-box-orient: vertical;
@@ -191,7 +193,6 @@
             text-align: right;
         }
 
-        /* ホバー時の認知フィードバック */
         .news-card:hover {
             background-color: #f7f7f7;
         }
@@ -201,84 +202,54 @@
         }
 
         /* ==========================================================================
-           Article Modal (記事詳細表示モーダル)
+           Article Detail View (単一ページ風の全画面詳細エリア)
            ========================================================================== */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.25s ease;
-            z-index: 200;
-            padding: 20px;
-        }
-
-        .modal-overlay.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .modal-content {
+        .detail-view {
             background-color: #fff;
-            max-width: 650px;
-            width: 100%;
-            border-radius: 8px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            padding: 30px;
-            position: relative;
-            transform: translateY(20px);
-            transition: transform 0.25s ease;
+            border: 1px solid #ccc;
+            padding: 40px;
+            margin-top: 20px;
+            border-radius: 4px;
         }
 
-        .modal-overlay.active .modal-content {
-            transform: translateY(0);
-        }
-
-        .modal-close {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            font-size: 24px;
-            background: none;
-            border: none;
+        .back-btn {
+            background-color: #fff;
+            border: 1px solid #333;
+            padding: 8px 16px;
+            font-size: 13px;
             cursor: pointer;
-            color: #aaa;
-            transition: color 0.15s;
+            margin-bottom: 30px;
+            transition: all 0.15s;
+            display: inline-block;
         }
 
-        .modal-close:hover {
-            color: #333;
+        .back-btn:hover {
+            background-color: #111;
+            color: #fff;
         }
 
-        .modal-date {
-            font-size: 12px;
+        .detail-date {
+            font-size: 13px;
             color: #888;
             margin-bottom: 10px;
             display: block;
         }
 
-        .modal-title {
-            font-size: 18px;
-            font-weight: 700;
+        .detail-title {
+            font-size: 24px;
+            font-weight: 800;
             color: #111;
             line-height: 1.4;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             border-bottom: 1px solid #eee;
             padding-bottom: 15px;
         }
 
-        .modal-body {
-            font-size: 14px;
-            line-height: 1.8;
-            color: #444;
-            white-space: pre-wrap; /* 改行を画面に正しく表現 */
+        .detail-body {
+            font-size: 15px;
+            line-height: 1.9;
+            color: #333;
+            white-space: pre-wrap; /* 改行を有効にする */
         }
 
         /* ==========================================================================
@@ -304,6 +275,9 @@
             .search-box, .search-box input {
                 width: 100%;
             }
+            .detail-view {
+                padding: 20px;
+            }
         }
     </style>
 </head>
@@ -312,7 +286,7 @@
     <header class="main-header">
         <div class="header-container">
             <div class="logo-area">
-                <img src="Main.png" class="logo-image">
+                <img src="Main.png" alt="Main.png" class="logo-image">
                 <p class="subtitle">~ 気になるニュースを紹介 ~</p>
             </div>
             
@@ -327,7 +301,8 @@
     </header>
 
     <main class="container">
-        <section class="news-section">
+        
+        <section class="news-section" id="newsSection">
             <div class="section-header">
                 <h2>新着順</h2>
                 <span class="arrow">&gt;</span>
@@ -335,38 +310,40 @@
             
             <div class="news-grid" id="newsGrid"></div>
         </section>
-    </main>
 
-    <div class="modal-overlay" id="articleModal">
-        <div class="modal-content">
-            <button class="modal-close" id="modalCloseBtn">&times;</button>
-            <span class="modal-date" id="modalDate"></span>
-            <h2 class="modal-title" id="modalTitle"></h2>
-            <div class="modal-body" id="modalBody"></div>
-        </div>
-    </div>
+        <section class="detail-section hidden" id="detailSection">
+            <div class="detail-view">
+                <button class="back-btn" id="backToListBtn">← 一覧に戻る</button>
+                <span class="detail-date" id="detailDate"></span>
+                <h2 class="detail-title" id="detailTitle"></h2>
+                <div class="detail-body" id="detailBody"></div>
+            </div>
+        </section>
+
+    </main>
 
     <script src="News.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             
-            // データが正しく読み込まれているか検証
             if (typeof newsArticles === 'undefined') {
-                console.error("News.js が見つからないか、データが定義されていません。");
-                document.getElementById('newsGrid').innerHTML = '<div style="grid-column: 1/-1; padding: 40px; text-align: center; color: red; background:#fff;">News.jsデータが見つかりません。ファイル名と位置を確認してください。</div>';
+                console.error("News.jsデータが見つかりません。");
+                document.getElementById('newsGrid').innerHTML = '<div style="grid-column: 1/-1; padding: 40px; text-align: center; color: red; background:#fff;">News.jsデータが見つかりません。</div>';
                 return;
             }
 
+            const newsSection = document.getElementById('newsSection');
             const newsGrid = document.getElementById('newsGrid');
+            const detailSection = document.getElementById('detailSection');
             const searchInput = document.getElementById('searchInput');
-            const modal = document.getElementById('articleModal');
-            const modalCloseBtn = document.getElementById('modalCloseBtn');
-            const modalDate = document.getElementById('modalDate');
-            const modalTitle = document.getElementById('modalTitle');
-            const modalBody = document.getElementById('modalBody');
+            
+            const backToListBtn = document.getElementById('backToListBtn');
+            const detailDate = document.getElementById('detailDate');
+            const detailTitle = document.getElementById('detailTitle');
+            const detailBody = document.getElementById('detailBody');
 
-            // 1. ニュース一覧を描画する
+            // 1. ニュース一覧を描画
             function renderNews(articles) {
                 newsGrid.innerHTML = '';
 
@@ -384,7 +361,7 @@
                     card.className = 'news-card';
                     card.setAttribute('data-id', article.id);
                     
-                    // タイトル画像の部分を完全に廃止し、タイトルテキストと日付のみに
+                    // タイトルと日付のみ
                     card.innerHTML = `
                         <div class="news-title-area">
                             <h3 class="news-title">${escapeHTML(article.title)}</h3>
@@ -392,49 +369,51 @@
                         </div>
                     `;
                     
-                    // クリックイベント
+                    // 記事クリック時：前面全体表示に切り替え
                     card.addEventListener('click', () => {
-                        openArticle(article);
+                        showArticleDetail(article);
                     });
 
                     newsGrid.appendChild(card);
                 });
             }
 
-            // 2. 本文モーダルを開く
-            function openArticle(article) {
-                modalDate.textContent = article.date;
-                modalTitle.textContent = article.title;
-                modalBody.textContent = article.content; // 本文
-                modal.classList.add('active');
-                document.body.style.overflow = 'hidden'; // 背後の画面スクロールを防ぐ
+            // 2. 詳細ページ（前面表示）に切り替える
+            function showArticleDetail(article) {
+                detailDate.textContent = article.date;
+                detailTitle.textContent = article.title;
+                detailBody.textContent = article.content;
+
+                // 一覧を非表示、詳細を表示
+                newsSection.classList.add('hidden');
+                detailSection.classList.remove('hidden');
+                
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             }
 
-            // 3. モーダルを閉じる
-            function closeModal() {
-                modal.classList.remove('active');
-                document.body.style.overflow = '';
-            }
-
-            modalCloseBtn.addEventListener('click', closeModal);
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) closeModal();
+            // 3. 一覧ページへ戻る
+            backToListBtn.addEventListener('click', () => {
+                detailSection.classList.add('hidden');
+                newsSection.classList.remove('hidden');
             });
 
-            // 4. 入力中の自動挙動を無効化し、エンターキー押下時に「1文字でも一致（部分一致）」したら絞り込み
+            // 4. キー判定（Enter押下時に「1文字部分一致」抽出）
             searchInput.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter') {
-                    e.preventDefault(); // Enterによる想定外のページ挙動を抑止
+                    e.preventDefault();
                     
                     const query = e.target.value.toLowerCase().trim();
                     
-                    // 検索欄が空の場合はすべての記事を再表示
+                    // 検索時は一覧画面を表示（詳細からでも一覧に戻す）
+                    detailSection.classList.add('hidden');
+                    newsSection.classList.remove('hidden');
+
                     if (query === "") {
                         renderNews(newsArticles);
                         return;
                     }
 
-                    // タイトルまたは本文に、検索ワードが「1文字でも含まれる」記事をフィルタリング
+                    // 部分一致する記事を抽出
                     const filtered = newsArticles.filter(article => 
                         article.title.toLowerCase().includes(query) || 
                         article.content.toLowerCase().includes(query)
@@ -451,7 +430,6 @@
                 );
             }
 
-            // 初期ロード実行
             renderNews(newsArticles);
         });
     </script>
