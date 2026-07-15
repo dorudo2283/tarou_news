@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Main.png ~ 気になるニュースを紹介 ~</title>
+    <title>気になるニュースを紹介</title>
     <style>
         /* ==========================================================================
            Base Styles & Reset
@@ -28,7 +28,7 @@
         }
 
         /* ==========================================================================
-           Header (ワイヤーフレーム再現＋質感向上)
+           Header (ロゴ部分に指定されたアップロード画像を表示)
            ========================================================================== */
         .main-header {
             background-color: #e0e0e0;
@@ -50,16 +50,23 @@
             gap: 15px;
         }
 
-        .logo-area h1 {
-            font-size: 24px;
-            font-weight: 800;
-            color: #111;
+        /* ロゴ画像をきれいに収めるスタイル */
+        .logo-area {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .logo-image {
+            max-height: 50px; /* ヘッダーに美しく収まるサイズに制限 */
+            width: auto;
+            object-fit: contain;
+            display: block;
         }
 
         .logo-area .subtitle {
             font-size: 11px;
             color: #666;
-            margin-top: -2px;
         }
 
         .search-and-settings {
@@ -134,7 +141,7 @@
             color: #666;
         }
 
-        /* 5列グリッド：境界線を1pxにするため、親に背景色(#333)を指定し、すき間(gap)を1pxにする手法 */
+        /* 5列グリッド。黒い1pxの境界線 */
         .news-grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
@@ -145,7 +152,7 @@
         }
 
         /* ==========================================================================
-           News Card
+           News Card (画像枠なし・タイトルテキストのみ)
            ========================================================================== */
         .news-card {
             background-color: #fff;
@@ -153,29 +160,12 @@
             display: flex;
             flex-direction: column;
             transition: background-color 0.15s ease;
-        }
-
-        /* 記事画像プレースホルダー */
-        .news-image-placeholder {
-            aspect-ratio: 4 / 3;
-            background-color: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 15px;
-            border-bottom: 1px solid #333; /* ワイヤーフレームの境界線を再現 */
-        }
-
-        .news-image-placeholder span {
-            font-size: 12px;
-            color: #777;
-            font-weight: 500;
-            text-align: center;
+            min-height: 140px; /* テキストだけでもカードとしての高さを一定に担保 */
         }
 
         /* 記事タイトルエリア */
         .news-title-area {
-            padding: 15px;
+            padding: 20px;
             flex-grow: 1;
             display: flex;
             flex-direction: column;
@@ -183,13 +173,13 @@
         }
 
         .news-title {
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 600;
-            line-height: 1.4;
+            line-height: 1.5;
             color: #222;
-            /* 3行制限（はみ出た部分は3点リーダー...で省略） */
+            /* 4行制限（はみ出た部分は自動的に3点リーダー...で省略） */
             display: -webkit-box;
-            -webkit-line-clamp: 3;
+            -webkit-line-clamp: 4;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
@@ -197,11 +187,11 @@
         .news-date {
             font-size: 10px;
             color: #999;
-            margin-top: 10px;
+            margin-top: 15px;
             text-align: right;
         }
 
-        /* ホバーアクション */
+        /* ホバー時の認知フィードバック */
         .news-card:hover {
             background-color: #f7f7f7;
         }
@@ -292,7 +282,7 @@
         }
 
         /* ==========================================================================
-           Responsive Design (デバイス最適化)
+           Responsive Design
            ========================================================================== */
         @media (max-width: 1024px) {
             .news-grid {
@@ -322,14 +312,14 @@
     <header class="main-header">
         <div class="header-container">
             <div class="logo-area">
-                <h1>Main.png</h1>
+                <img src="Base Profile Screenshot 2026.07.15 - 19.23.37.13.png" alt="Main.png" class="logo-image">
                 <p class="subtitle">~ 気になるニュースを紹介 ~</p>
             </div>
             
             <div class="search-and-settings">
                 <div class="search-box">
                     <span class="search-icon">🔍</span>
-                    <input type="text" id="searchInput" placeholder="記事のタイトルやキーワードで検索">
+                    <input type="text" id="searchInput" placeholder="キーワードを入力しEnterで検索">
                 </div>
                 <button class="settings-btn">設定マーク</button>
             </div>
@@ -394,11 +384,8 @@
                     card.className = 'news-card';
                     card.setAttribute('data-id', article.id);
                     
-                    // ワイヤーフレーム通りの枠組み（タイトル画像なし）
+                    // タイトル画像の部分を完全に廃止し、タイトルテキストと日付のみに
                     card.innerHTML = `
-                        <div class="news-image-placeholder">
-                            <span>[ タイトル画像 ]</span>
-                        </div>
                         <div class="news-title-area">
                             <h3 class="news-title">${escapeHTML(article.title)}</h3>
                             <span class="news-date">${escapeHTML(article.date)}</span>
@@ -434,14 +421,27 @@
                 if (e.target === modal) closeModal();
             });
 
-            // 4. リアルタイム検索（タイトルまたは本文から曖昧検索）
-            searchInput.addEventListener('input', (e) => {
-                const query = e.target.value.toLowerCase().trim();
-                const filtered = newsArticles.filter(article => 
-                    article.title.toLowerCase().includes(query) || 
-                    article.content.toLowerCase().includes(query)
-                );
-                renderNews(filtered);
+            // 4. 入力中の自動挙動を無効化し、エンターキー押下時に「1文字でも一致（部分一致）」したら絞り込み
+            searchInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault(); // Enterによる想定外のページ挙動を抑止
+                    
+                    const query = e.target.value.toLowerCase().trim();
+                    
+                    // 検索欄が空の場合はすべての記事を再表示
+                    if (query === "") {
+                        renderNews(newsArticles);
+                        return;
+                    }
+
+                    // タイトルまたは本文に、検索ワードが「1文字でも含まれる」記事をフィルタリング
+                    const filtered = newsArticles.filter(article => 
+                        article.title.toLowerCase().includes(query) || 
+                        article.content.toLowerCase().includes(query)
+                    );
+                    
+                    renderNews(filtered);
+                }
             });
 
             // セキュリティ：XSS対策
@@ -451,7 +451,7 @@
                 );
             }
 
-            // 初期実行
+            // 初期ロード実行
             renderNews(newsArticles);
         });
     </script>
