@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>気になるニュースを紹介</title>
+    <title>タロウ NEWS</title>
     <style>
         /* ==========================================================================
-           Base Styles & Reset
+           デザイン刷新：ユニセフにインスパイアされたクリーン＆モダン・ブルー
            ========================================================================== */
         *, *::before, *::after {
             box-sizing: border-box;
@@ -14,83 +14,95 @@
             padding: 0;
         }
 
+        :root {
+            /* ユニセフをイメージした鮮やかで信頼感のあるシアンブルーと濃紺 */
+            --primary-color: #1C9AD6; 
+            --dark-color: #0F2D4A;
+            --light-bg: #F4F8FA;
+            --text-main: #1D2A3A;
+            --text-sub: #5C6F84;
+            --border-color: #E2EAF1;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans JP", sans-serif;
-            background-color: #fcfcfc;
-            color: #333;
-            line-height: 1.6;
+            font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", sans-serif;
+            background-color: var(--light-bg);
+            color: var(--text-main);
+            line-height: 1.75;
+            -webkit-font-smoothing: antialiased;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1140px;
             margin: 0 auto;
-            padding: 0 20px;
+            padding: 0 24px;
         }
 
         /* ==========================================================================
-           Header (テキストロゴ「タロウ NEWS」を実装)
+           Header (テキストロゴ「タロウ NEWS」)
            ========================================================================== */
         .main-header {
-            background-color: #e0e0e0;
-            border-bottom: 1px solid #ccc;
-            padding: 15px 0;
+            background-color: #ffffff;
+            border-bottom: 2px solid var(--primary-color);
+            padding: 20px 0;
             position: sticky;
             top: 0;
             z-index: 100;
+            box-shadow: 0 4px 20px rgba(15, 45, 74, 0.05);
         }
 
         .header-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 15px;
+            gap: 20px;
         }
 
         .logo-area {
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 2px;
+            text-decoration: none;
         }
 
-        /* テキストロゴのスタイル */
         .logo-text {
             display: flex;
             align-items: baseline;
-            gap: 4px;
+            gap: 6px;
             line-height: 1;
         }
 
-        /* 太い角ゴシック */
+        /* 太い角ゴシック (インパクトと信頼感) */
         .logo-taro {
-            font-family: "Impact", "Arial Black", "Noto Sans JP", sans-serif;
+            font-family: "Impact", "Arial Black", sans-serif;
             font-weight: 900;
-            font-size: 28px;
-            color: #111;
+            font-size: 32px;
+            color: var(--dark-color);
             letter-spacing: -0.5px;
         }
 
-        /* 明朝体 */
+        /* 明朝体 (知的なアクセント) */
         .logo-news {
             font-family: "Georgia", "Times New Roman", "YuMincho", "MS Mincho", serif;
-            font-weight: 500;
-            font-size: 24px;
-            color: #444;
+            font-weight: 700;
+            font-size: 26px;
+            color: var(--primary-color);
             letter-spacing: 1px;
         }
 
         .logo-area .subtitle {
             font-size: 11px;
-            color: #666;
+            font-weight: 700;
+            color: var(--text-sub);
+            letter-spacing: 0.05em;
         }
 
+        /* 検索窓 */
         .search-and-settings {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
         }
 
         .search-box {
@@ -101,174 +113,218 @@
 
         .search-icon {
             position: absolute;
-            left: 12px;
-            color: #777;
+            left: 14px;
+            color: var(--text-sub);
             font-size: 14px;
             pointer-events: none;
         }
 
         .search-box input {
-            width: 280px;
-            padding: 8px 12px 8px 36px;
-            border: 1px solid #ccc;
+            width: 320px;
+            padding: 12px 16px 12px 42px;
+            border: 1px solid var(--border-color);
+            border-radius: 30px; /* 角を丸くしてモダンに */
             background-color: #fff;
             font-size: 14px;
+            color: var(--text-main);
             outline: none;
-            transition: all 0.2s ease;
+            transition: all 0.25s ease;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.02);
         }
 
         .search-box input:focus {
-            border-color: #111;
-            box-shadow: 0 0 0 3px rgba(0,0,0,0.05);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(28, 154, 214, 0.15);
+            width: 360px; /* フォーカス時に少し広げるギミック */
         }
 
         .settings-btn {
             background-color: #fff;
-            border: 1px solid #ccc;
-            padding: 8px 15px;
+            border: 1px solid var(--border-color);
+            color: var(--text-sub);
+            padding: 12px 20px;
             font-size: 13px;
+            font-weight: 600;
+            border-radius: 30px;
             cursor: pointer;
-            transition: background 0.2s;
+            transition: all 0.2s;
         }
 
         .settings-btn:hover {
-            background-color: #f0f0f0;
+            background-color: var(--light-bg);
+            border-color: var(--text-sub);
+            color: var(--dark-color);
         }
 
         /* ==========================================================================
-           News Section (5カラムグリッド)
+           News Section (ユニセフ風カードデザイン＆1pxグリッド境界の排除)
            ========================================================================== */
         .news-section {
-            margin: 40px auto;
+            margin: 50px auto;
         }
 
-        /* 画面切り替え用：非表示にする要素 */
         .hidden {
             display: none !important;
         }
 
+        /* セクションヘッダー：太字とアンダーラインで雑誌のように */
         .section-header {
             display: flex;
             align-items: center;
-            gap: 8px;
-            margin-bottom: 20px;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--dark-color);
+            padding-bottom: 12px;
         }
 
         .section-header h2 {
-            font-size: 18px;
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--dark-color);
+            letter-spacing: -0.02em;
+        }
+
+        /* 検索時に切り替わるサブテキスト */
+        .section-header .search-status-text {
+            font-size: 15px;
+            color: var(--primary-color);
             font-weight: 700;
+            margin-left: auto; /* 右寄せ */
+            background-color: rgba(28, 154, 214, 0.1);
+            padding: 4px 12px;
+            border-radius: 15px;
         }
 
-        .section-header .arrow {
-            font-size: 16px;
-            color: #666;
-        }
-
-        /* 5列グリッド：1pxの黒い境界線 */
+        /* 3列カードグリッド（ユニセフ風：余白を広めにとり、カードを浮き立たせる） */
         .news-grid {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            border: 1px solid #333;
-            background-color: #333;
-            gap: 1px;
-            overflow: hidden;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
         }
 
         /* ==========================================================================
-           News Card (画像領域なし・タイトルと日付のみ)
+           News Card (洗練された影、ホバー時のカード上昇アニメーション)
            ========================================================================== */
         .news-card {
             background-color: #fff;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
             cursor: pointer;
             display: flex;
             flex-direction: column;
-            transition: background-color 0.15s ease;
-            min-height: 140px; /* テキストのみで美しさを担保 */
-        }
-
-        .news-title-area {
-            padding: 20px;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .news-title {
-            font-size: 14px;
-            font-weight: 600;
-            line-height: 1.5;
-            color: #222;
-            display: -webkit-box;
-            -webkit-line-clamp: 4;
-            -webkit-box-orient: vertical;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             overflow: hidden;
-        }
-
-        .news-date {
-            font-size: 10px;
-            color: #999;
-            margin-top: 15px;
-            text-align: right;
+            box-shadow: 0 2px 12px rgba(15, 45, 74, 0.04);
         }
 
         .news-card:hover {
-            background-color: #f7f7f7;
+            transform: translateY(-5px); /* ふわっと浮き上がる */
+            box-shadow: 0 12px 30px rgba(15, 45, 74, 0.08);
+            border-color: var(--primary-color);
+        }
+
+        .news-title-area {
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            justify-content: space-between;
+            min-height: 180px;
+        }
+
+        .news-title {
+            font-size: 16px;
+            font-weight: 700;
+            line-height: 1.5;
+            color: var(--dark-color);
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            transition: color 0.2s ease;
         }
 
         .news-card:hover .news-title {
-            color: #000;
+            color: var(--primary-color); /* ホバーするとブルーに */
+        }
+
+        /* カテゴリタグ風のダミーアクセント（よりWebメディアらしく見せる） */
+        .news-tag {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--primary-color);
+            margin-bottom: 12px;
+            letter-spacing: 0.05em;
+        }
+
+        .news-date {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-sub);
+            margin-top: auto;
+            padding-top: 15px;
+            border-top: 1px dashed var(--border-color);
         }
 
         /* ==========================================================================
-           Article Detail View (単一ページ風の全画面詳細エリア)
+           Article Detail View (雑誌の記事のようなレイアウト)
            ========================================================================== */
         .detail-view {
             background-color: #fff;
-            border: 1px solid #ccc;
-            padding: 40px;
-            margin-top: 20px;
-            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 50px;
+            margin-top: 30px;
+            box-shadow: 0 4px 20px rgba(15, 45, 74, 0.04);
         }
 
         .back-btn {
-            background-color: #fff;
-            border: 1px solid #333;
-            padding: 8px 16px;
+            background-color: transparent;
+            border: 2px solid var(--border-color);
+            color: var(--text-sub);
+            padding: 10px 20px;
             font-size: 13px;
+            font-weight: 700;
+            border-radius: 30px;
             cursor: pointer;
-            margin-bottom: 30px;
-            transition: all 0.15s;
-            display: inline-block;
+            margin-bottom: 40px;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .back-btn:hover {
-            background-color: #111;
-            color: #fff;
+            border-color: var(--dark-color);
+            color: var(--dark-color);
+            background-color: var(--light-bg);
         }
 
         .detail-date {
-            font-size: 13px;
-            color: #888;
-            margin-bottom: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 15px;
             display: block;
+            letter-spacing: 0.05em;
         }
 
         .detail-title {
-            font-size: 24px;
+            font-size: 30px;
             font-weight: 800;
-            color: #111;
+            color: var(--dark-color);
             line-height: 1.4;
-            margin-bottom: 25px;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 15px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--light-bg);
+            padding-bottom: 24px;
         }
 
         .detail-body {
-            font-size: 15px;
-            line-height: 1.9;
-            color: #333;
-            white-space: pre-wrap; /* 改行を有効にする */
+            font-size: 16px;
+            line-height: 2.0;
+            color: var(--text-main);
+            white-space: pre-wrap;
         }
 
         /* ==========================================================================
@@ -276,26 +332,26 @@
            ========================================================================== */
         @media (max-width: 1024px) {
             .news-grid {
-                grid-template-columns: repeat(3, 1fr);
+                grid-template-columns: repeat(2, 1fr);
             }
         }
 
         @media (max-width: 768px) {
             .news-grid {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: 1fr; /* スマホは1列にスッキリと */
             }
             .header-container {
                 flex-direction: column;
-                align-items: flex-start;
+                align-items: stretch;
             }
-            .search-and-settings {
-                width: 100%;
-            }
-            .search-box, .search-box input {
+            .search-box input, .search-box input:focus {
                 width: 100%;
             }
             .detail-view {
-                padding: 20px;
+                padding: 30px 20px;
+            }
+            .detail-title {
+                font-size: 22px;
             }
         }
     </style>
@@ -303,9 +359,8 @@
 <body>
 
     <header class="main-header">
-        <div class="header-container">
+        <div class="header-container container">
             <div class="logo-area">
-                <!-- 画像ロゴを廃止し、デザインされたテキストロゴへ変更 -->
                 <div class="logo-text">
                     <span class="logo-taro">タロウ</span>
                     <span class="logo-news">NEWS</span>
@@ -318,7 +373,7 @@
                     <span class="search-icon">🔍</span>
                     <input type="text" id="searchInput" placeholder="キーワードを入力しEnterで検索">
                 </div>
-                <button class="settings-btn">設定マーク</button>
+                <button class="settings-btn">設定</button>
             </div>
         </div>
     </header>
@@ -327,9 +382,9 @@
         
         <section class="news-section" id="newsSection">
             <div class="section-header">
-                <!-- 表示を「新着順」から「一致順」へ変更 -->
-                <h2>一致順</h2>
-                <span class="arrow">&gt;</span>
+                <!-- 動的に書き換わるタイトルエリア -->
+                <h2 id="sectionTitle">新着順</h2>
+                <div id="searchStatus" class="search-status-text hidden"></div>
             </div>
             
             <div class="news-grid" id="newsGrid"></div>
@@ -362,6 +417,9 @@
             const detailSection = document.getElementById('detailSection');
             const searchInput = document.getElementById('searchInput');
             
+            const sectionTitle = document.getElementById('sectionTitle');
+            const searchStatus = document.getElementById('searchStatus');
+
             const backToListBtn = document.getElementById('backToListBtn');
             const detailDate = document.getElementById('detailDate');
             const detailTitle = document.getElementById('detailTitle');
@@ -373,7 +431,7 @@
 
                 if (articles.length === 0) {
                     newsGrid.innerHTML = `
-                        <div style="grid-column: 1/-1; padding: 40px; text-align: center; background: #fff; color: #777;">
+                        <div style="grid-column: 1/-1; padding: 60px 20px; text-align: center; background: #fff; border-radius: 8px; border: 1px dashed var(--border-color); color: var(--text-sub);">
                             該当する記事が見つかりませんでした。
                         </div>
                     `;
@@ -385,15 +443,17 @@
                     card.className = 'news-card';
                     card.setAttribute('data-id', article.id);
                     
-                    // タイトルと日付のみ
+                    // ユニセフ等の活動報告カードのように、上部にカテゴリ風ラベル、下部に点線と日付を配置
                     card.innerHTML = `
                         <div class="news-title-area">
-                            <h3 class="news-title">${escapeHTML(article.title)}</h3>
+                            <div>
+                                <div class="news-tag">Report</div>
+                                <h3 class="news-title">${escapeHTML(article.title)}</h3>
+                            </div>
                             <span class="news-date">${escapeHTML(article.date)}</span>
                         </div>
                     `;
                     
-                    // 記事クリック時：前面全体表示に切り替え
                     card.addEventListener('click', () => {
                         showArticleDetail(article);
                     });
@@ -402,13 +462,12 @@
                 });
             }
 
-            // 2. 詳細ページ（前面表示）に切り替える
+            // 2. 詳細ページに切り替える
             function showArticleDetail(article) {
                 detailDate.textContent = article.date;
                 detailTitle.textContent = article.title;
                 detailBody.textContent = article.content;
 
-                // 一覧を非表示、詳細を表示
                 newsSection.classList.add('hidden');
                 detailSection.classList.remove('hidden');
                 
@@ -421,39 +480,50 @@
                 newsSection.classList.remove('hidden');
             });
 
-            // 4. キー判定（Enter押下時に「1文字部分一致」抽出）
+            // 4. 検索キー判定 (Enter)
             searchInput.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter') {
                     e.preventDefault();
                     
-                    const query = e.target.value.toLowerCase().trim();
+                    const query = e.target.value.trim();
                     
-                    // 検索時は一覧画面を表示（詳細からでも一覧に戻す）
+                    // 検索時は必ず一覧画面に戻す
                     detailSection.classList.add('hidden');
                     newsSection.classList.remove('hidden');
 
                     if (query === "") {
+                        // 空文字でEnterならデフォルトの新着順に戻す
+                        sectionTitle.textContent = "新着順";
+                        searchStatus.classList.add('hidden');
                         renderNews(newsArticles);
                         return;
                     }
 
-                    // 部分一致する記事を抽出
+                    // 1文字以上の部分一致検索
+                    const queryLower = query.toLowerCase();
                     const filtered = newsArticles.filter(article => 
-                        article.title.toLowerCase().includes(query) || 
-                        article.content.toLowerCase().includes(query)
+                        article.title.toLowerCase().includes(queryLower) || 
+                        article.content.toLowerCase().includes(queryLower)
                     );
+
+                    // 検索中の表示変更の適用
+                    // 例: 「"AI"の検索結果」と表記を出しつつ、その下は「一致順」として出力
+                    sectionTitle.textContent = `「${query}」の検索結果`;
+                    searchStatus.textContent = "一致順";
+                    searchStatus.classList.remove('hidden');
                     
                     renderNews(filtered);
                 }
             });
 
-            // セキュリティ：XSS対策
+            // XSS対策
             function escapeHTML(str) {
                 return str.replace(/[&<>'"]/g, 
                     tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
                 );
             }
 
+            // 初期ロード時は「新着順」
             renderNews(newsArticles);
         });
     </script>
