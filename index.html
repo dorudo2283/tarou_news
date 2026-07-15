@@ -107,12 +107,16 @@
             display: flex;
             align-items: center;
             gap: 12px;
+            /* 検索エリア全体の幅を明示的に確保 */
+            min-width: 557px; 
         }
 
         .search-box {
             position: relative;
             display: flex;
             align-items: center;
+            /* 親の幅いっぱいに広げる */
+            width: 100%; 
         }
 
         .search-icon {
@@ -123,9 +127,10 @@
             pointer-events: none;
         }
 
-        /* 検索窓をさらに長く変更（320px -> 500px） */
+        /* 検索窓自体の幅を500pxで完全に固定・拡張 */
         .search-box input {
             width: 500px;
+            flex-shrink: 0; /* 縮まないように固定 */
             padding: 12px 16px 12px 42px;
             border: 1px solid var(--border-color);
             border-radius: 0; /* 丸みゼロ */
@@ -148,6 +153,7 @@
             width: 45px;
             height: 45px;
             border-radius: 0;
+            flex-shrink: 0; /* 縮まないように固定 */
             cursor: pointer;
             transition: all 0.2s;
             display: flex;
@@ -463,8 +469,15 @@
             .news-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
+            /* タブレットサイズでも崩れないように調整 */
+            .search-and-settings {
+                min-width: auto;
+                width: 100%;
+                max-width: 557px;
+            }
             .search-box input {
-                width: 350px;
+                width: 100%;
+                flex-shrink: 1;
             }
         }
 
@@ -476,7 +489,14 @@
                 flex-direction: column;
                 align-items: stretch;
             }
-            .search-box input, .search-box input:focus {
+            .search-and-settings {
+                width: 100%;
+                min-width: auto;
+            }
+            .search-box {
+                width: 100%;
+            }
+            .search-box input {
                 width: 100%;
             }
         }
