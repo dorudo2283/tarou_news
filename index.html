@@ -6,7 +6,7 @@
     <title>タロウ NEWS</title>
     <style>
         /* ==========================================================================
-           デザイン：角張ったシャープでクリーンなフラットブルー
+           デザイン：角張ったシャープでクリーンなフラットブルー（浮き上がり廃止）
            ========================================================================== */
         *, *::before, *::after {
             box-sizing: border-box;
@@ -21,7 +21,7 @@
             --text-main: #1D2A3A;
             --text-sub: #5C6F84;
             --border-color: #E2EAF1;
-            /* 文字サイズ調整用の基本倍率 */
+            /* 文字サイズ調整用の基本倍率（CSS変数で管理） */
             --font-scale: 1;
         }
 
@@ -31,7 +31,7 @@
             color: var(--text-main);
             line-height: 1.75;
             -webkit-font-smoothing: antialiased;
-            /* スケール値に連動 */
+            /* サイト全体のサイズを動的に切り替え可能に */
             font-size: calc(16px * var(--font-scale));
         }
 
@@ -62,7 +62,6 @@
             gap: 20px;
         }
 
-        /* タイトルを押すとホームに戻れる設計 */
         .logo-area {
             display: flex;
             flex-direction: column;
@@ -83,7 +82,7 @@
         .logo-taro {
             font-family: "Impact", "Arial Black", sans-serif;
             font-weight: 900;
-            font-size: 32px;
+            font-size: calc(32px * var(--font-scale));
             color: var(--dark-color);
             letter-spacing: -0.5px;
         }
@@ -92,13 +91,13 @@
         .logo-news {
             font-family: "Georgia", "Times New Roman", "YuMincho", "MS Mincho", serif;
             font-weight: 700;
-            font-size: 26px;
+            font-size: calc(26px * var(--font-scale));
             color: var(--primary-color);
             letter-spacing: 1px;
         }
 
         .logo-area .subtitle {
-            font-size: 11px;
+            font-size: calc(11px * var(--font-scale));
             font-weight: 700;
             color: var(--text-sub);
             letter-spacing: 0.05em;
@@ -120,20 +119,21 @@
             position: absolute;
             left: 14px;
             color: var(--text-sub);
-            font-size: 14px;
+            font-size: calc(14px * var(--font-scale));
             pointer-events: none;
         }
 
+        /* 検索窓をさらに長く変更（320px -> 500px） */
         .search-box input {
-            width: 320px;
+            width: 500px;
             padding: 12px 16px 12px 42px;
             border: 1px solid var(--border-color);
-            border-radius: 0; /* 丸みゼロに修正 */
+            border-radius: 0; /* 丸みゼロ */
             background-color: #fff;
-            font-size: 14px;
+            font-size: calc(14px * var(--font-scale));
             color: var(--text-main);
             outline: none;
-            transition: all 0.25s ease;
+            transition: border-color 0.25s ease;
         }
 
         .search-box input:focus {
@@ -147,7 +147,7 @@
             border: 1px solid var(--border-color);
             width: 45px;
             height: 45px;
-            border-radius: 0; /* 丸みゼロに修正 */
+            border-radius: 0;
             cursor: pointer;
             transition: all 0.2s;
             display: flex;
@@ -167,7 +167,7 @@
 
         .settings-btn:hover svg {
             fill: var(--dark-color);
-            transform: rotate(45deg); /* ホバーすると回るギミック */
+            transform: rotate(45deg);
         }
 
         /* ==========================================================================
@@ -191,14 +191,14 @@
         }
 
         .section-header h2 {
-            font-size: 22px;
+            font-size: calc(22px * var(--font-scale));
             font-weight: 800;
             color: var(--dark-color);
             letter-spacing: -0.02em;
         }
 
         .section-header .search-status-text {
-            font-size: 14px;
+            font-size: calc(14px * var(--font-scale));
             color: var(--primary-color);
             font-weight: 700;
             margin-left: auto;
@@ -212,22 +212,22 @@
             gap: 24px;
         }
 
-        /* カードの角丸を直線へ */
+        /* カードの角丸と、浮き上がるホバー（translateY）を完全撤廃 */
         .news-card {
             background-color: #fff;
-            border-radius: 0; /* 角を直線に */
+            border-radius: 0;
             border: 1px solid var(--border-color);
             cursor: pointer;
             display: flex;
             flex-direction: column;
-            transition: all 0.25s ease;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
             overflow: hidden;
             box-shadow: 0 2px 10px rgba(15, 45, 74, 0.03);
         }
 
         .news-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 10px 24px rgba(15, 45, 74, 0.07);
+            /* 浮かせず、背景色とボーダーの変更で綺麗に見せる */
+            background-color: #F8FCFE;
             border-color: var(--primary-color);
         }
 
@@ -241,7 +241,7 @@
         }
 
         .news-title {
-            font-size: 16px;
+            font-size: calc(16px * var(--font-scale));
             font-weight: 700;
             line-height: 1.5;
             color: var(--dark-color);
@@ -256,7 +256,7 @@
         }
 
         .news-date {
-            font-size: 12px;
+            font-size: calc(12px * var(--font-scale));
             font-weight: 600;
             color: var(--text-sub);
             margin-top: auto;
@@ -265,69 +265,16 @@
         }
 
         /* ==========================================================================
-           記事登録フォームエリア (ホーム画面の下に表示)
+           お気に入り（ブックマーク）一覧セクション（ホームの下部）
            ========================================================================== */
-        .article-form-section {
-            background-color: #fff;
-            border: 1px solid var(--border-color);
-            padding: 30px;
-            margin: 50px auto;
-        }
-
-        .form-title {
-            font-size: 18px;
-            font-weight: 800;
-            color: var(--dark-color);
-            margin-bottom: 20px;
-            border-left: 4px solid var(--primary-color);
-            padding-left: 10px;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 13px;
-            font-weight: 700;
-            color: var(--text-main);
-            margin-bottom: 6px;
-        }
-
-        .form-group input, .form-group textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid var(--border-color);
-            border-radius: 0;
-            outline: none;
-            font-size: 14px;
-            background-color: var(--light-bg);
-            transition: border-color 0.2s;
-        }
-
-        .form-group input:focus, .form-group textarea:focus {
-            border-color: var(--primary-color);
-            background-color: #fff;
-        }
-
-        .submit-btn {
-            background-color: var(--dark-color);
-            color: #fff;
-            border: none;
-            padding: 12px 24px;
-            font-size: 14px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .submit-btn:hover {
-            background-color: var(--primary-color);
+        .bookmark-section {
+            margin: 60px auto;
+            border-top: 2px solid var(--border-color);
+            padding-top: 40px;
         }
 
         /* ==========================================================================
-           Article Detail View
+           Article Detail View (登録ボタン等の機能追加)
            ========================================================================== */
         .detail-view {
             background-color: #fff;
@@ -338,16 +285,22 @@
             box-shadow: 0 4px 15px rgba(15, 45, 74, 0.03);
         }
 
+        .detail-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
         .back-btn {
             background-color: transparent;
             border: 2px solid var(--border-color);
             color: var(--text-sub);
             padding: 10px 20px;
-            font-size: 13px;
+            font-size: calc(13px * var(--font-scale));
             font-weight: 700;
             border-radius: 0;
             cursor: pointer;
-            margin-bottom: 40px;
             transition: all 0.2s;
             display: inline-flex;
             align-items: center;
@@ -360,8 +313,35 @@
             background-color: var(--light-bg);
         }
 
+        /* お気に入り登録ボタン */
+        .bookmark-btn {
+            background-color: #fff;
+            border: 2px solid var(--border-color);
+            color: var(--text-main);
+            padding: 10px 20px;
+            font-size: calc(13px * var(--font-scale));
+            font-weight: 700;
+            border-radius: 0;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .bookmark-btn:hover {
+            border-color: #FFC107;
+            background-color: #FFFDF5;
+        }
+
+        .bookmark-btn.active {
+            background-color: #FFC107;
+            border-color: #FFC107;
+            color: #fff;
+        }
+
         .detail-date {
-            font-size: 14px;
+            font-size: calc(14px * var(--font-scale));
             font-weight: 700;
             color: var(--primary-color);
             margin-bottom: 15px;
@@ -369,7 +349,7 @@
         }
 
         .detail-title {
-            font-size: 28px;
+            font-size: calc(28px * var(--font-scale));
             font-weight: 800;
             color: var(--dark-color);
             line-height: 1.4;
@@ -379,7 +359,7 @@
         }
 
         .detail-body {
-            font-size: 16px;
+            font-size: calc(16px * var(--font-scale));
             line-height: 2.0;
             color: var(--text-main);
             white-space: pre-wrap;
@@ -417,7 +397,7 @@
         }
 
         .modal-header-area h3 {
-            font-size: 18px;
+            font-size: calc(18px * var(--font-scale));
             font-weight: 800;
             color: var(--dark-color);
         }
@@ -442,6 +422,7 @@
             border: 1px solid var(--border-color);
             background-color: var(--light-bg);
             font-weight: 700;
+            font-size: calc(14px * var(--font-scale));
             cursor: pointer;
             transition: all 0.2s;
         }
@@ -482,6 +463,9 @@
             .news-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
+            .search-box input {
+                width: 350px;
+            }
         }
 
         @media (max-width: 768px) {
@@ -502,7 +486,7 @@
 
     <header class="main-header">
         <div class="header-container container">
-            <!-- タイトルをクリックするとホーム（新着順）へ戻る -->
+            <!-- ロゴを押すとホームへ戻る -->
             <div class="logo-area" id="logoHomeBtn">
                 <div class="logo-text">
                     <span class="logo-taro">タロウ</span>
@@ -516,7 +500,7 @@
                     <span class="search-icon">🔍</span>
                     <input type="text" id="searchInput" placeholder="キーワードを入力しEnterで検索">
                 </div>
-                <!-- 歯車アイコンのSVGマークに変更 -->
+                <!-- 歯車アイコン（SVG） -->
                 <button class="settings-btn" id="settingsBtn" title="文字サイズ変更">
                     <svg viewBox="0 0 24 24" width="20" height="20">
                         <path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3-1.57-3-3.5s1.07-3.5 3-3.5 3 1.57 3 3.5-1.07 3.5-3 3.5z"/>
@@ -528,6 +512,7 @@
 
     <main class="container">
         
+        <!-- 通常のニュース（新着順 / 検索結果） -->
         <section class="news-section" id="newsSection">
             <div class="section-header">
                 <h2 id="sectionTitle">新着順</h2>
@@ -537,29 +522,24 @@
             <div class="news-grid" id="newsGrid"></div>
         </section>
 
-        <!-- 新規記事登録エリア -->
-        <section class="article-form-section" id="formSection">
-            <h3 class="form-title">ニュース記事を登録する</h3>
-            <form id="addArticleForm">
-                <div class="form-group">
-                    <label for="newTitle">記事タイトル</label>
-                    <input type="text" id="newTitle" required placeholder="例: 最新ウェブトレンドについて">
-                </div>
-                <div class="form-group">
-                    <label for="newDate">日付</label>
-                    <input type="text" id="newDate" required placeholder="例: 2026.07.16">
-                </div>
-                <div class="form-group">
-                    <label for="newContent">記事本文</label>
-                    <textarea id="newContent" rows="5" required placeholder="記事の本文を入力してください"></textarea>
-                </div>
-                <button type="submit" class="submit-btn">新規記事を登録</button>
-            </form>
+        <!-- お気に入り登録記事一覧セクション（新着順リストの下に表示） -->
+        <section class="news-section bookmark-section" id="bookmarkSection">
+            <div class="section-header">
+                <h2>登録した記事（お気に入り）</h2>
+            </div>
+            <div class="news-grid" id="bookmarkGrid"></div>
         </section>
 
+        <!-- 記事詳細表示エリア -->
         <section class="detail-section hidden" id="detailSection">
             <div class="detail-view">
-                <button class="back-btn" id="backToListBtn">← 一覧に戻る</button>
+                <div class="detail-actions">
+                    <button class="back-btn" id="backToListBtn">← 一覧に戻る</button>
+                    <!-- お気に入り登録トグルボタン -->
+                    <button class="bookmark-btn" id="bookmarkToggleBtn">
+                        <span class="star-icon">☆</span> お気に入りに登録
+                    </button>
+                </div>
                 <span class="detail-date" id="detailDate"></span>
                 <h2 class="detail-title" id="detailTitle"></h2>
                 <div class="detail-body" id="detailBody"></div>
@@ -594,37 +574,46 @@
         </div>
     </footer>
 
+    <!-- JSデータの取得 -->
     <script src="News.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             
-            // News.jsデータの確認（存在しない場合は初期データ定義）
-            let localArticles = [];
+            // 記事データの読み込み
+            let articles = [];
             if (typeof newsArticles !== 'undefined') {
-                localArticles = [...newsArticles];
+                articles = [...newsArticles];
             } else {
                 console.error("News.jsデータが見つかりません。");
                 document.getElementById('newsGrid').innerHTML = '<div style="grid-column: 1/-1; padding: 40px; text-align: center; color: red; background:#fff;">News.jsデータが見つかりません。</div>';
                 return;
             }
 
+            // お気に入り（登録した記事）のIDをローカルストレージまたは配列で保持
+            let bookmarkedIds = JSON.parse(localStorage.getItem('bookmarkedIds')) || [];
+
+            // 現在閲覧している詳細ページの記事ID
+            let currentArticleId = null;
+
+            // DOM要素
             const newsSection = document.getElementById('newsSection');
             const newsGrid = document.getElementById('newsGrid');
+            const bookmarkSection = document.getElementById('bookmarkSection');
+            const bookmarkGrid = document.getElementById('bookmarkGrid');
             const detailSection = document.getElementById('detailSection');
-            const formSection = document.getElementById('formSection');
             const searchInput = document.getElementById('searchInput');
             
             const sectionTitle = document.getElementById('sectionTitle');
             const searchStatus = document.getElementById('searchStatus');
 
             const backToListBtn = document.getElementById('backToListBtn');
+            const bookmarkToggleBtn = document.getElementById('bookmarkToggleBtn');
             const detailDate = document.getElementById('detailDate');
             const detailTitle = document.getElementById('detailTitle');
             const detailBody = document.getElementById('detailBody');
 
             const logoHomeBtn = document.getElementById('logoHomeBtn');
-            const addArticleForm = document.getElementById('addArticleForm');
 
             // 設定モーダル関連
             const settingsBtn = document.getElementById('settingsBtn');
@@ -632,11 +621,13 @@
             const closeModalBtn = document.getElementById('closeModalBtn');
             const fontButtons = document.querySelectorAll('.font-btn');
 
-            // 1. ニュース一覧を描画
-            function renderNews(articles) {
+            // ==========================================================================
+            // 1. メインニュース一覧を描画
+            // ==========================================================================
+            function renderNews(targetArticles) {
                 newsGrid.innerHTML = '';
 
-                if (articles.length === 0) {
+                if (targetArticles.length === 0) {
                     newsGrid.innerHTML = `
                         <div style="grid-column: 1/-1; padding: 60px 20px; text-align: center; background: #fff; color: var(--text-sub); border: 1px dashed var(--border-color);">
                             該当する記事が見つかりませんでした。
@@ -645,112 +636,155 @@
                     return;
                 }
 
-                articles.forEach(article => {
-                    const card = document.createElement('div');
-                    card.className = 'news-card';
-                    card.setAttribute('data-id', article.id);
-                    
-                    card.innerHTML = `
-                        <div class="news-title-area">
-                            <h3 class="news-title">${escapeHTML(article.title)}</h3>
-                            <span class="news-date">${escapeHTML(article.date)}</span>
-                        </div>
-                    `;
-                    
-                    card.addEventListener('click', () => {
-                        showArticleDetail(article);
-                    });
-
+                targetArticles.forEach(article => {
+                    const card = createCardElement(article);
                     newsGrid.appendChild(card);
                 });
             }
 
-            // 2. 詳細ページに切り替える
+            // ==========================================================================
+            // 2. お気に入り登録された記事一覧を描画 (ホーム画面の下に表示)
+            // ==========================================================================
+            function renderBookmarks() {
+                bookmarkGrid.innerHTML = '';
+
+                // 登録されたIDの記事を抽出
+                const bookmarkedArticles = articles.filter(art => bookmarkedIds.includes(art.id));
+
+                if (bookmarkedArticles.length === 0) {
+                    bookmarkGrid.innerHTML = `
+                        <div style="grid-column: 1/-1; padding: 40px 20px; text-align: center; background: #fff; color: var(--text-sub); border: 1px dashed var(--border-color); font-size: 13px;">
+                            お気に入りに登録された記事はここに表示されます（詳細画面から登録できます）。
+                        </div>
+                    `;
+                    return;
+                }
+
+                bookmarkedArticles.forEach(article => {
+                    const card = createCardElement(article);
+                    bookmarkGrid.appendChild(card);
+                });
+            }
+
+            // カード要素の生成共通処理
+            function createCardElement(article) {
+                const card = document.createElement('div');
+                card.className = 'news-card';
+                card.setAttribute('data-id', article.id);
+                
+                card.innerHTML = `
+                    <div class="news-title-area">
+                        <h3 class="news-title">${escapeHTML(article.title)}</h3>
+                        <span class="news-date">${escapeHTML(article.date)}</span>
+                    </div>
+                `;
+                
+                card.addEventListener('click', () => {
+                    showArticleDetail(article);
+                });
+                return card;
+            }
+
+            // ==========================================================================
+            // 3. 記事詳細表示
+            // ==========================================================================
             function showArticleDetail(article) {
+                currentArticleId = article.id;
                 detailDate.textContent = article.date;
                 detailTitle.textContent = article.title;
                 detailBody.textContent = article.content;
 
+                // お気に入り状態のUI更新
+                updateBookmarkButtonUI(article.id);
+
+                // 各種一覧セクションを隠して、詳細を表示
                 newsSection.classList.add('hidden');
-                formSection.classList.add('hidden'); // 詳細表示時は登録フォームも隠す
+                bookmarkSection.classList.add('hidden');
                 detailSection.classList.remove('hidden');
                 
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
 
-            // 3. 一覧ページへ戻る
+            // お気に入りボタンの見た目切り替え
+            function updateBookmarkButtonUI(id) {
+                if (bookmarkedIds.includes(id)) {
+                    bookmarkToggleBtn.classList.add('active');
+                    bookmarkToggleBtn.innerHTML = `<span class="star-icon">★</span> 登録済み`;
+                } else {
+                    bookmarkToggleBtn.classList.remove('active');
+                    bookmarkToggleBtn.innerHTML = `<span class="star-icon">☆</span> お気に入りに登録`;
+                }
+            }
+
+            // お気に入り登録のトグル処理
+            bookmarkToggleBtn.addEventListener('click', () => {
+                if (currentArticleId === null) return;
+
+                if (bookmarkedIds.includes(currentArticleId)) {
+                    // 解除
+                    bookmarkedIds = bookmarkedIds.filter(id => id !== currentArticleId);
+                } else {
+                    // 登録
+                    bookmarkedIds.push(currentArticleId);
+                }
+
+                // 保存と再描画
+                localStorage.setItem('bookmarkedIds', JSON.stringify(bookmarkedIds));
+                updateBookmarkButtonUI(currentArticleId);
+                renderBookmarks();
+            });
+
+            // ==========================================================================
+            // 4. ナビゲーション（一覧に戻る / ロゴクリックでホームに戻る）
+            // ==========================================================================
             function backToHome() {
                 detailSection.classList.add('hidden');
                 newsSection.classList.remove('hidden');
-                formSection.classList.remove('hidden');
+                bookmarkSection.classList.remove('hidden');
             }
 
             backToListBtn.addEventListener('click', backToHome);
 
-            // 4. タイトルロゴを押してホーム（検索リセット・新着順）に戻る
             logoHomeBtn.addEventListener('click', () => {
+                // 検索リセット
                 searchInput.value = '';
                 sectionTitle.textContent = "新着順";
                 searchStatus.classList.add('hidden');
+                
+                // ホーム画面を再描画
                 backToHome();
-                renderNews(localArticles);
+                renderNews(articles);
+                renderBookmarks();
             });
 
-            // 5. 新規記事の登録処理
-            addArticleForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-
-                const titleInput = document.getElementById('newTitle');
-                const dateInput = document.getElementById('newDate');
-                const contentInput = document.getElementById('newContent');
-
-                const newArticle = {
-                    id: localArticles.length > 0 ? Math.max(...localArticles.map(a => a.id)) + 1 : 1,
-                    title: titleInput.value.trim(),
-                    date: dateInput.value.trim(),
-                    content: contentInput.value.trim()
-                };
-
-                // 配列の最後に追加（ホーム画面の下にどんどん追加される）
-                localArticles.push(newArticle);
-
-                // フォームの入力内容をリセット
-                addArticleForm.reset();
-
-                // リストを再描画
-                renderNews(localArticles);
-
-                // 追加が視覚的にわかるように少しスクロール
-                const lastCard = newsGrid.lastElementChild;
-                if (lastCard) {
-                    lastCard.scrollIntoView({ behavior: 'smooth' });
-                }
-            });
-
-            // 6. 検索キー判定 (Enter)
+            // ==========================================================================
+            // 5. 検索機能
+            // ==========================================================================
             searchInput.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter') {
                     e.preventDefault();
                     
                     const query = e.target.value.trim();
                     
+                    // 検索時は一旦詳細ページを閉じる
                     detailSection.classList.add('hidden');
                     newsSection.classList.remove('hidden');
-                    formSection.classList.remove('hidden');
+                    bookmarkSection.classList.remove('hidden');
 
                     if (query === "") {
                         sectionTitle.textContent = "新着順";
                         searchStatus.classList.add('hidden');
-                        renderNews(localArticles);
+                        renderNews(articles);
                         return;
                     }
 
                     const queryLower = query.toLowerCase();
-                    const filtered = localArticles.filter(article => 
+                    const filtered = articles.filter(article => 
                         article.title.toLowerCase().includes(queryLower) || 
                         article.content.toLowerCase().includes(queryLower)
                     );
 
+                    // 検索時のヘッダー表示
                     sectionTitle.textContent = `「${query}」の検索結果`;
                     searchStatus.textContent = "一致順";
                     searchStatus.classList.remove('hidden');
@@ -759,7 +793,9 @@
                 }
             });
 
-            // 7. 歯車設定モーダルの開閉とスケール処理
+            // ==========================================================================
+            // 6. 設定モーダル（文字サイズ変更）
+            // ==========================================================================
             settingsBtn.addEventListener('click', () => {
                 settingsModal.classList.remove('hidden');
             });
@@ -768,20 +804,20 @@
                 settingsModal.classList.add('hidden');
             });
 
-            // モーダルの外側をクリックしたら閉じる
             settingsModal.addEventListener('click', (e) => {
                 if (e.target === settingsModal) {
                     settingsModal.classList.add('hidden');
                 }
             });
 
+            // 文字サイズ変更処理（確実に反映されるよう修正）
             fontButtons.forEach(btn => {
                 btn.addEventListener('click', () => {
                     fontButtons.forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
 
-                    // CSSのカスタムプロパティを書き換えて、全体のサイズを制御
                     const scale = btn.getAttribute('data-scale');
+                    // HTMLのルート要素にCSS変数を確実に設定
                     document.documentElement.style.setProperty('--font-scale', scale);
                 });
             });
@@ -793,7 +829,9 @@
                 );
             }
 
-            renderNews(localArticles);
+            // 初期ロード処理
+            renderNews(articles);
+            renderBookmarks();
         });
     </script>
 </body>
