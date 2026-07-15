@@ -1,1 +1,459 @@
-a
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main.png ~ 気になるニュースを紹介 ~</title>
+    <style>
+        /* ==========================================================================
+           Base Styles & Reset
+           ========================================================================== */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans JP", sans-serif;
+            background-color: #fcfcfc;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* ==========================================================================
+           Header (ワイヤーフレーム再現＋質感向上)
+           ========================================================================== */
+        .main-header {
+            background-color: #e0e0e0;
+            border-bottom: 1px solid #ccc;
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .logo-area h1 {
+            font-size: 24px;
+            font-weight: 800;
+            color: #111;
+        }
+
+        .logo-area .subtitle {
+            font-size: 11px;
+            color: #666;
+            margin-top: -2px;
+        }
+
+        .search-and-settings {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .search-box {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            color: #777;
+            font-size: 14px;
+            pointer-events: none;
+        }
+
+        .search-box input {
+            width: 280px;
+            padding: 8px 12px 8px 36px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .search-box input:focus {
+            border-color: #111;
+            box-shadow: 0 0 0 3px rgba(0,0,0,0.05);
+        }
+
+        .settings-btn {
+            background-color: #fff;
+            border: 1px solid #ccc;
+            padding: 8px 15px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .settings-btn:hover {
+            background-color: #f0f0f0;
+        }
+
+        /* ==========================================================================
+           News Section (5カラムグリッド)
+           ========================================================================== */
+        .news-section {
+            margin: 40px auto;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .section-header h2 {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .section-header .arrow {
+            font-size: 16px;
+            color: #666;
+        }
+
+        /* 5列グリッド：境界線を1pxにするため、親に背景色(#333)を指定し、すき間(gap)を1pxにする手法 */
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            border: 1px solid #333;
+            background-color: #333;
+            gap: 1px;
+            overflow: hidden;
+        }
+
+        /* ==========================================================================
+           News Card
+           ========================================================================== */
+        .news-card {
+            background-color: #fff;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            transition: background-color 0.15s ease;
+        }
+
+        /* 記事画像プレースホルダー */
+        .news-image-placeholder {
+            aspect-ratio: 4 / 3;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            border-bottom: 1px solid #333; /* ワイヤーフレームの境界線を再現 */
+        }
+
+        .news-image-placeholder span {
+            font-size: 12px;
+            color: #777;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        /* 記事タイトルエリア */
+        .news-title-area {
+            padding: 15px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .news-title {
+            font-size: 13px;
+            font-weight: 600;
+            line-height: 1.4;
+            color: #222;
+            /* 3行制限（はみ出た部分は3点リーダー...で省略） */
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .news-date {
+            font-size: 10px;
+            color: #999;
+            margin-top: 10px;
+            text-align: right;
+        }
+
+        /* ホバーアクション */
+        .news-card:hover {
+            background-color: #f7f7f7;
+        }
+
+        .news-card:hover .news-title {
+            color: #000;
+        }
+
+        /* ==========================================================================
+           Article Modal (記事詳細表示モーダル)
+           ========================================================================== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+            z-index: 200;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            max-width: 650px;
+            width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            padding: 30px;
+            position: relative;
+            transform: translateY(20px);
+            transition: transform 0.25s ease;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 24px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #aaa;
+            transition: color 0.15s;
+        }
+
+        .modal-close:hover {
+            color: #333;
+        }
+
+        .modal-date {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #111;
+            line-height: 1.4;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+        }
+
+        .modal-body {
+            font-size: 14px;
+            line-height: 1.8;
+            color: #444;
+            white-space: pre-wrap; /* 改行を画面に正しく表現 */
+        }
+
+        /* ==========================================================================
+           Responsive Design (デバイス最適化)
+           ========================================================================== */
+        @media (max-width: 1024px) {
+            .news-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .news-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .header-container {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .search-and-settings {
+                width: 100%;
+            }
+            .search-box, .search-box input {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="header-container">
+            <div class="logo-area">
+                <h1>Main.png</h1>
+                <p class="subtitle">~ 気になるニュースを紹介 ~</p>
+            </div>
+            
+            <div class="search-and-settings">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="searchInput" placeholder="記事のタイトルやキーワードで検索">
+                </div>
+                <button class="settings-btn">設定マーク</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="news-section">
+            <div class="section-header">
+                <h2>新着順</h2>
+                <span class="arrow">&gt;</span>
+            </div>
+            
+            <div class="news-grid" id="newsGrid"></div>
+        </section>
+    </main>
+
+    <div class="modal-overlay" id="articleModal">
+        <div class="modal-content">
+            <button class="modal-close" id="modalCloseBtn">&times;</button>
+            <span class="modal-date" id="modalDate"></span>
+            <h2 class="modal-title" id="modalTitle"></h2>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+
+    <script src="News.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // データが正しく読み込まれているか検証
+            if (typeof newsArticles === 'undefined') {
+                console.error("News.js が見つからないか、データが定義されていません。");
+                document.getElementById('newsGrid').innerHTML = '<div style="grid-column: 1/-1; padding: 40px; text-align: center; color: red; background:#fff;">News.jsデータが見つかりません。ファイル名と位置を確認してください。</div>';
+                return;
+            }
+
+            const newsGrid = document.getElementById('newsGrid');
+            const searchInput = document.getElementById('searchInput');
+            const modal = document.getElementById('articleModal');
+            const modalCloseBtn = document.getElementById('modalCloseBtn');
+            const modalDate = document.getElementById('modalDate');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalBody = document.getElementById('modalBody');
+
+            // 1. ニュース一覧を描画する
+            function renderNews(articles) {
+                newsGrid.innerHTML = '';
+
+                if (articles.length === 0) {
+                    newsGrid.innerHTML = `
+                        <div style="grid-column: 1/-1; padding: 40px; text-align: center; background: #fff; color: #777;">
+                            該当する記事が見つかりませんでした。
+                        </div>
+                    `;
+                    return;
+                }
+
+                articles.forEach(article => {
+                    const card = document.createElement('div');
+                    card.className = 'news-card';
+                    card.setAttribute('data-id', article.id);
+                    
+                    // ワイヤーフレーム通りの枠組み（タイトル画像なし）
+                    card.innerHTML = `
+                        <div class="news-image-placeholder">
+                            <span>[ タイトル画像 ]</span>
+                        </div>
+                        <div class="news-title-area">
+                            <h3 class="news-title">${escapeHTML(article.title)}</h3>
+                            <span class="news-date">${escapeHTML(article.date)}</span>
+                        </div>
+                    `;
+                    
+                    // クリックイベント
+                    card.addEventListener('click', () => {
+                        openArticle(article);
+                    });
+
+                    newsGrid.appendChild(card);
+                });
+            }
+
+            // 2. 本文モーダルを開く
+            function openArticle(article) {
+                modalDate.textContent = article.date;
+                modalTitle.textContent = article.title;
+                modalBody.textContent = article.content; // 本文
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden'; // 背後の画面スクロールを防ぐ
+            }
+
+            // 3. モーダルを閉じる
+            function closeModal() {
+                modal.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+
+            modalCloseBtn.addEventListener('click', closeModal);
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeModal();
+            });
+
+            // 4. リアルタイム検索（タイトルまたは本文から曖昧検索）
+            searchInput.addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase().trim();
+                const filtered = newsArticles.filter(article => 
+                    article.title.toLowerCase().includes(query) || 
+                    article.content.toLowerCase().includes(query)
+                );
+                renderNews(filtered);
+            });
+
+            // セキュリティ：XSS対策
+            function escapeHTML(str) {
+                return str.replace(/[&<>'"]/g, 
+                    tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+                );
+            }
+
+            // 初期実行
+            renderNews(newsArticles);
+        });
+    </script>
+</body>
+</html>
