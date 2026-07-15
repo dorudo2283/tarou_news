@@ -28,7 +28,7 @@
         }
 
         /* ==========================================================================
-           Header (ロゴ画像 Main.png を表示)
+           Header (テキストロゴ「タロウ NEWS」を実装)
            ========================================================================== */
         .main-header {
             background-color: #e0e0e0;
@@ -56,11 +56,30 @@
             gap: 4px;
         }
 
-        .logo-image {
-            max-height: 50px;
-            width: auto;
-            object-fit: contain;
-            display: block;
+        /* テキストロゴのスタイル */
+        .logo-text {
+            display: flex;
+            align-items: baseline;
+            gap: 4px;
+            line-height: 1;
+        }
+
+        /* 太い角ゴシック */
+        .logo-taro {
+            font-family: "Impact", "Arial Black", "Noto Sans JP", sans-serif;
+            font-weight: 900;
+            font-size: 28px;
+            color: #111;
+            letter-spacing: -0.5px;
+        }
+
+        /* 明朝体 */
+        .logo-news {
+            font-family: "Georgia", "Times New Roman", "YuMincho", "MS Mincho", serif;
+            font-weight: 500;
+            font-size: 24px;
+            color: #444;
+            letter-spacing: 1px;
         }
 
         .logo-area .subtitle {
@@ -286,7 +305,11 @@
     <header class="main-header">
         <div class="header-container">
             <div class="logo-area">
-                <img src="Main.png" alt="Main.png" class="logo-image">
+                <!-- 画像ロゴを廃止し、デザインされたテキストロゴへ変更 -->
+                <div class="logo-text">
+                    <span class="logo-taro">タロウ</span>
+                    <span class="logo-news">NEWS</span>
+                </div>
                 <p class="subtitle">~ 気になるニュースを紹介 ~</p>
             </div>
             
@@ -304,7 +327,8 @@
         
         <section class="news-section" id="newsSection">
             <div class="section-header">
-                <h2>新着順</h2>
+                <!-- 表示を「新着順」から「一致順」へ変更 -->
+                <h2>一致順</h2>
                 <span class="arrow">&gt;</span>
             </div>
             
