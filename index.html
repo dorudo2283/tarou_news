@@ -280,7 +280,7 @@
         }
 
         /* ==========================================================================
-           Article Detail View (登録ボタン等の機能追加)
+           Article Detail View
            ========================================================================== */
         .detail-view {
             background-color: #fff;
@@ -368,7 +368,7 @@
             font-size: calc(16px * var(--font-scale));
             line-height: 2.0;
             color: var(--text-main);
-            white-space: pre-wrap;
+            /* white-space: pre-wrap はJavaScript側の<br>置換とバッティングするため撤廃 */
         }
 
         /* 💡 記事内に挿入される画像のスタイル（3行分の完璧な余白設計） */
@@ -707,23 +707,36 @@
             }
 
             // ==========================================================================
-            // 3. 記事詳細表示（💡画像置換ロジックを統合した安全な処理）
+            // 3. 記事詳細表示（最新・画像確実レンダリング版）
             // ==========================================================================
             function showArticleDetail(article) {
                 currentArticleId = article.id;
                 detailDate.textContent = article.date;
                 detailTitle.textContent = article.title;
 
-                // ① XSS対策を施した上でセーフテキストを生成
-                let safeContent = escapeHTML(article.content);
+                let contentHtml = article.content;
 
-                // ② [image:ファイル名.png] を検知して <img> タグに安全に置換
-                safeContent = safeContent.replace(/\[image:(.+?)]/g, (match, p1) => {
-                    return `<img src="${p1}" alt="記事画像" class="detail-article-img">`;
+                // 🌟 ① [image:ファイル名] タグを一時的な固有トークンに退避（HTML破損を防ぐ）
+                const images = [];
+                contentHtml = contentHtml.replace(/\[image:(.+?)]/g, (match, p1) => {
+                    const token = `__ARTICLE_IMAGE_TOKEN_${images.length}__`;
+                    images.push(`<img src="${p1}" alt="記事画像" class="detail-article-img">`);
+                    return token;
                 });
 
-                // ③ 処理後のコンテンツをインプット
-                detailBody.innerHTML = safeContent;
+                // ② テキスト全体を安全にエスケープ（XSS防止）
+                contentHtml = escapeHTML(contentHtml);
+
+                // ③ 改行コード（\n）をHTMLの改行タグ（<br>）に置換して、文章の形を維持
+                contentHtml = contentHtml.replace(/\n/g, '<br>');
+
+                // 🌟 ④ 退避させていた画像タグを、本来の位置にピュアなHTMLとして再結合
+                images.forEach((imgTag, index) => {
+                    contentHtml = contentHtml.replace(`__ARTICLE_IMAGE_TOKEN_${index}__`, imgTag);
+                });
+
+                // ⑤ innerHTMLを用いて完全な構造として描画
+                detailBody.innerHTML = contentHtml;
 
                 // お気に入り状態のUI更新
                 updateBookmarkButtonUI(article.id);
@@ -841,14 +854,14 @@
                 }
             });
 
-            // 文字サイズ変更処理（確実に反映されるよう修正）
+            // 文字サイズ変更処理
             fontButtons.forEach(btn => {
                 btn.addEventListener('click', () => {
                     fontButtons.forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
 
                     const scale = btn.getAttribute('data-scale');
-                    // HTMLのルート要素にCSS変数を確実に設定
+                    // HTMLのルート要素にCSS変数を設定
                     document.documentElement.style.setProperty('--font-scale', scale);
                 });
             });
