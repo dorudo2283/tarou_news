@@ -368,7 +368,6 @@
             font-size: calc(16px * var(--font-scale));
             line-height: 2.0;
             color: var(--text-main);
-            /* white-space: pre-wrap はJavaScript側の<br>置換とバッティングするため撤廃 */
         }
 
         /* 💡 記事内に挿入される画像のスタイル（3行分の完璧な余白設計） */
@@ -591,8 +590,8 @@
 
     <footer class="main-footer">
         <div class="container">
-            <p class="copyright">&copy; 2026 SAITO index </p>
-            <p class="license">Server : GitHub Pages 当ウェブサイトの内容はSAITO indexに属します。引用・転載をする場合は著作権表示をお願いいたします。</p>
+            <p class="copyright">&copy; 2026 © SAITO index </p>
+            <p class="license">Server:GitHub Pages\n当ウェブサイトの内容（文語、画像）はSAITO indexに属します。引用・転載をする場合は著作権表示をお願いいたします。</p>
         </div>
     </footer>
 
@@ -707,35 +706,66 @@
             }
 
             // ==========================================================================
-            // 3. 記事詳細表示（最新・画像確実レンダリング版）
+            // 3. 記事詳細表示（章構造・画像対応版に完全リプレイス）
             // ==========================================================================
             function showArticleDetail(article) {
                 currentArticleId = article.id;
                 detailDate.textContent = article.date;
                 detailTitle.textContent = article.title;
 
-                let contentHtml = article.content;
+                let contentHtml = '';
 
-                // 🌟 ① [image:ファイル名] タグを一時的な固有トークンに退避（HTML破損を防ぐ）
-                const images = [];
-                contentHtml = contentHtml.replace(/\[image:(.+?)]/g, (match, p1) => {
-                    const token = `__ARTICLE_IMAGE_TOKEN_${images.length}__`;
-                    images.push(`<img src="${p1}" alt="記事画像" class="detail-article-img">`);
-                    return token;
-                });
+                // 新しい配列構造（sections）が存在する場合の処理（チャンキング描画）
+                if (article.sections && Array.isArray(article.sections)) {
+                    article.sections.forEach(section => {
+                        // 1. 安全にテキストをエスケープ
+                        const safeHeading = escapeHTML(section.heading || '');
+                        let safeText = escapeHTML(section.text || '');
+                        
+                        // 2. 改行コードを<br>タグに置換して文章の可読性を保持
+                        safeText = safeText.replace(/\n/g, '<br>');
 
-                // ② テキスト全体を安全にエスケープ（XSS防止）
-                contentHtml = escapeHTML(contentHtml);
+                        // 3. 認知摩擦を下げるためのセクション単位のマークアップ組み立て
+                        contentHtml += `
+                            <div class="article-section" style="margin-bottom: 40px;">
+                                <h3 class="article-section-title" style="font-size: 20px; font-weight: 800; color: var(--dark-color); margin-bottom: 14px; border-left: 4px solid var(--primary-color); padding-left: 12px; letter-spacing: -0.01em;">
+                                    ${safeHeading}
+                                </h3>
+                                <p class="article-section-text" style="font-size: 16px; line-height: 1.9; color: var(--text-main); margin-bottom: 20px;">
+                                    ${safeText}
+                                </p>
+                        `;
 
-                // ③ 改行コード（\n）をHTMLの改行タグ（<br>）に置換して、文章の形を維持
-                contentHtml = contentHtml.replace(/\n/g, '<br>');
+                        // 4. 画像情報が個別に存在する場合のみ、クリーンなHTMLとして出力
+                        if (section.image) {
+                            const safeImgSrc = escapeHTML(section.image);
+                            contentHtml += `<img src="${safeImgSrc}" alt="記事画像" class="detail-article-img">`;
+                        }
 
-                // 🌟 ④ 退避させていた画像タグを、本来の位置にピュアなHTMLとして再結合
-                images.forEach((imgTag, index) => {
-                    contentHtml = contentHtml.replace(`__ARTICLE_IMAGE_TOKEN_${index}__`, imgTag);
-                });
+                        contentHtml += `</div>`;
+                    });
+                } else if (article.content) {
+                    // 後方互換性：もし古いデータ形式（content文字列型）の記事データが入ってきた場合のフォールバック処理
+                    let legacyContent = escapeHTML(article.content);
+                    
+                    // 以前の一時トークン退避方式を安全に適用
+                    const images = [];
+                    legacyContent = legacyContent.replace(/\[image:(.+?)]/g, (match, p1) => {
+                        const token = `__ARTICLE_IMAGE_TOKEN_${images.length}__`;
+                        images.push(`<img src="${escapeHTML(p1)}" alt="記事画像" class="detail-article-img">`);
+                        return token;
+                    });
 
-                // ⑤ innerHTMLを用いて完全な構造として描画
+                    legacyContent = legacyContent.replace(/\n/g, '<br>');
+
+                    images.forEach((imgTag, index) => {
+                        legacyContent = legacyContent.replace(`__ARTICLE_IMAGE_TOKEN_${index}__`, imgTag);
+                    });
+
+                    contentHtml = `<p>${legacyContent}</p>`;
+                }
+
+                // 5. 完全にパースされた構造を安全に出力
                 detailBody.innerHTML = contentHtml;
 
                 // お気に入り状態のUI更新
@@ -802,7 +832,7 @@
             });
 
             // ==========================================================================
-            // 5. 検索機能
+            // 5. 検索機能（前方・後方互換性対応：sections内の探索ロジックへのアップグレード）
             // ==========================================================================
             searchInput.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter') {
@@ -823,10 +853,24 @@
                     }
 
                     const queryLower = query.toLowerCase();
-                    const filtered = articles.filter(article => 
-                        article.title.toLowerCase().includes(queryLower) || 
-                        article.content.toLowerCase().includes(queryLower)
-                    );
+                    const filtered = articles.filter(article => {
+                        // 1. タイトルの検索判定
+                        const matchTitle = article.title.toLowerCase().includes(queryLower);
+                        
+                        // 2. 新データ形式（sections配列）の本文・見出しの検索判定
+                        let matchSections = false;
+                        if (article.sections && Array.isArray(article.sections)) {
+                            matchSections = article.sections.some(sec => 
+                                (sec.heading && sec.heading.toLowerCase().includes(queryLower)) || 
+                                (sec.text && sec.text.toLowerCase().includes(queryLower))
+                            );
+                        }
+
+                        // 3. 旧データ形式（content文字列）の検索判定
+                        const matchLegacyContent = article.content ? article.content.toLowerCase().includes(queryLower) : false;
+
+                        return matchTitle || matchSections || matchLegacyContent;
+                    });
 
                     // 検索時のヘッダー表示
                     sectionTitle.textContent = `「${query}」の検索結果...`;
