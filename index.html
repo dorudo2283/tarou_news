@@ -371,6 +371,16 @@
             white-space: pre-wrap;
         }
 
+        /* 💡 記事内に挿入される画像のスタイル（3行分の完璧な余白設計） */
+        .detail-article-img {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            /* 本文のline-height: 2.0に基づき、上下にちょうど3行分の余白(3.0em)を付与 */
+            margin: 3.0em 0; 
+            border: 1px solid var(--border-color);
+        }
+
         /* ==========================================================================
            設定モーダル
            ========================================================================== */
@@ -506,7 +516,6 @@
 
     <header class="main-header">
         <div class="header-container container">
-            <!-- ロゴを押すとホームへ戻る -->
             <div class="logo-area" id="logoHomeBtn">
                 <div class="logo-text">
                     <span class="logo-taro">タロウ</span>
@@ -520,7 +529,6 @@
                     <span class="search-icon">🔍</span>
                     <input type="text" id="searchInput" placeholder="キーワードを入力しEnterで検索">
                 </div>
-                <!-- 歯車アイコン（SVG） -->
                 <button class="settings-btn" id="settingsBtn" title="文字サイズ変更">
                     <svg viewBox="0 0 24 24" width="20" height="20">
                         <path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3-1.57-3-3.5s1.07-3.5 3-3.5 3 1.57 3 3.5-1.07 3.5-3 3.5z"/>
@@ -532,7 +540,6 @@
 
     <main class="container">
         
-        <!-- 通常のニュース（新着順 / 検索結果） -->
         <section class="news-section" id="newsSection">
             <div class="section-header">
                 <h2 id="sectionTitle">新着順</h2>
@@ -542,7 +549,6 @@
             <div class="news-grid" id="newsGrid"></div>
         </section>
 
-        <!-- お気に入り登録記事一覧セクション（新着順リストの下に表示） -->
         <section class="news-section bookmark-section" id="bookmarkSection">
             <div class="section-header">
                 <h2>登録した記事（お気に入り）</h2>
@@ -550,12 +556,10 @@
             <div class="news-grid" id="bookmarkGrid"></div>
         </section>
 
-        <!-- 記事詳細表示エリア -->
         <section class="detail-section hidden" id="detailSection">
             <div class="detail-view">
                 <div class="detail-actions">
                     <button class="back-btn" id="backToListBtn">← 一覧に戻る</button>
-                    <!-- お気に入り登録トグルボタン -->
                     <button class="bookmark-btn" id="bookmarkToggleBtn">
                         <span class="star-icon">☆</span> お気に入りに登録
                     </button>
@@ -568,7 +572,6 @@
 
     </main>
 
-    <!-- 設定モーダル（初期状態はhidden） -->
     <div class="modal-overlay hidden" id="settingsModal">
         <div class="settings-modal">
             <div class="modal-header-area">
@@ -586,7 +589,6 @@
         </div>
     </div>
 
-    <!-- フッターエリア -->
     <footer class="main-footer">
         <div class="container">
             <p class="copyright">&copy;Tarou</p>
@@ -594,7 +596,6 @@
         </div>
     </footer>
 
-    <!-- JSデータの取得 -->
     <script src="News.js"></script>
 
     <script>
@@ -706,13 +707,23 @@
             }
 
             // ==========================================================================
-            // 3. 記事詳細表示
+            // 3. 記事詳細表示（💡画像置換ロジックを統合した安全な処理）
             // ==========================================================================
             function showArticleDetail(article) {
                 currentArticleId = article.id;
                 detailDate.textContent = article.date;
                 detailTitle.textContent = article.title;
-                detailBody.textContent = article.content;
+
+                // ① XSS対策を施した上でセーフテキストを生成
+                let safeContent = escapeHTML(article.content);
+
+                // ② [image:ファイル名.png] を検知して <img> タグに安全に置換
+                safeContent = safeContent.replace(/\[image:(.+?)]/g, (match, p1) => {
+                    return `<img src="${p1}" alt="記事画像" class="detail-article-img">`;
+                });
+
+                // ③ 処理後のコンテンツをインプット
+                detailBody.innerHTML = safeContent;
 
                 // お気に入り状態のUI更新
                 updateBookmarkButtonUI(article.id);
