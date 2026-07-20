@@ -1,4 +1,3 @@
-// News.js
 const newsArticles = [
     {
         id: 1,
