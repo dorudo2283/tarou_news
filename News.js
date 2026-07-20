@@ -1,5 +1,5 @@
 const newsArticles = [
-    {
+　   {
         id: 1,
         title: "SDGsとは何か？課題点やこれによる効果をわかりやすく解説！",
         date: "2026.07.16",
